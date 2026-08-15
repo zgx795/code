@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<meta name="theme-color" content="#111827" />
+<title>酒局擂台 · Cheers PK</title>
+<script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
+<style>
+:root{--bg:#0b1020;--card:#141b31;--card2:#1b2440;--text:#f7f8ff;--muted:#a8b0ca;--accent:#ffb703;--accent2:#fb7185;--ok:#4ade80;--danger:#fb7185;--line:rgba(255,255,255,.11)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% 0%,#243056 0,transparent 34%),radial-gradient(circle at 100% 20%,#3b1d40 0,transparent 34%),var(--bg);color:var(--text);font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+button,input{font:inherit}.wrap{width:min(720px,100%);margin:auto;padding:18px 16px 42px}.hero{padding:28px 4px 16px}.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.5px;font-size:28px}.logo{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#ff7b00);box-shadow:0 10px 35px rgba(255,183,3,.2)}.sub{color:var(--muted);margin-top:8px;line-height:1.65}.card{background:rgba(20,27,49,.88);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 18px 45px rgba(0,0,0,.22);backdrop-filter:blur(12px);margin-top:14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:8px;margin-top:12px}.field label{font-size:13px;color:var(--muted)}input{width:100%;border:1px solid var(--line);background:#0f1630;color:#fff;border-radius:14px;padding:14px 15px;outline:none}input:focus{border-color:rgba(255,183,3,.65)}button{border:0;border-radius:15px;padding:13px 16px;font-weight:800;cursor:pointer;color:#10121a;background:var(--accent);transition:.15s transform,.15s opacity}button:active{transform:scale(.98)}button.secondary{background:#27314f;color:#fff;border:1px solid var(--line)}button.danger{background:var(--accent2);color:#fff}button.ghost{background:transparent;color:#fff;border:1px solid var(--line)}button:disabled{opacity:.45;cursor:not-allowed}.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.btnrow button{flex:1;min-width:120px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}.roomtag{padding:8px 10px;border-radius:999px;background:#0f1630;border:1px solid var(--line);font-size:13px;color:#dfe4f4}.status{font-size:12px;color:var(--muted)}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#64748b;margin-right:6px}.dot.on{background:var(--ok);box-shadow:0 0 14px rgba(74,222,128,.7)}
+.players{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:12px}.player{background:#0f1630;border:1px solid var(--line);border-radius:16px;padding:12px}.pname{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pscore{font-size:24px;font-weight:900;margin-top:3px}.small{font-size:12px;color:var(--muted)}.games{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.gamepick{background:#0f1630;border:1px solid var(--line);color:#fff;text-align:left;padding:14px;border-radius:16px}.gamepick strong{display:block;margin-bottom:4px}.gamepick span{font-size:12px;color:var(--muted)}.gamepick.active{outline:2px solid var(--accent);background:#1d2747}.center{text-align:center}.big{font-size:54px;font-weight:950;letter-spacing:-2px}.countdown{font-size:76px;font-weight:950;color:var(--accent);min-height:95px;display:grid;place-items:center}.tapzone{width:100%;min-height:210px;border-radius:24px;background:linear-gradient(145deg,#263252,#151d36);border:1px solid var(--line);display:grid;place-items:center;text-align:center;padding:18px;user-select:none;touch-action:manipulation}.tapzone.go{background:linear-gradient(145deg,#14532d,#166534)}.tapzone.bad{background:linear-gradient(145deg,#7f1d1d,#991b1b)}.tapzone .main{font-size:28px;font-weight:950}.tapzone .num{font-size:68px;font-weight:950}.ranking{display:flex;flex-direction:column;gap:8px;margin-top:12px}.rank{display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:8px;padding:11px 12px;background:#0f1630;border:1px solid var(--line);border-radius:14px}.rank.me{border-color:rgba(255,183,3,.55)}.medal{font-size:20px}.punish{background:linear-gradient(135deg,rgba(251,113,133,.18),rgba(255,183,3,.12));border:1px solid rgba(251,113,133,.35);border-radius:18px;padding:15px;margin-top:14px}.punish strong{font-size:19px}.safe{margin-top:14px;color:#9fa8c3;font-size:12px;line-height:1.55}.hidden{display:none!important}.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#fff;color:#111827;padding:11px 15px;border-radius:999px;font-weight:800;box-shadow:0 15px 40px rgba(0,0,0,.3);z-index:50;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1}.divider{height:1px;background:var(--line);margin:16px 0}.pill{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;background:#10172e;color:#dce2f1;border:1px solid var(--line);font-size:12px}.hostonly{display:none}.is-host .hostonly{display:block}.mode{display:flex;gap:8px}.mode button{padding:9px 12px;font-size:12px}.notice{border-left:3px solid var(--accent);padding-left:10px;color:#c9d0e4;font-size:13px;line-height:1.55;margin-top:12px}@media(max-width:520px){.wrap{padding:12px 12px 32px}.brand{font-size:24px}.grid,.games{grid-template-columns:1fr}.big{font-size:45px}.tapzone{min-height:190px}.card{border-radius:18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="brand"><div class="logo">🥂</div><div>酒局擂台 <span style="color:var(--accent)">PK</span></div></div>
+    <div class="sub">不用下载 App。开房、发链接、一起 PK；输的人接受一项轻量惩罚。</div>
+  </div>
+
+  <section id="home" class="card">
+    <div class="grid">
+      <div>
+        <h3 style="margin:0 0 6px">我是房主</h3>
+        <div class="small">创建一个 4 位房间码，然后把链接发群里。</div>
+        <div class="field"><label>你的昵称</label><input id="hostName" maxlength="12" placeholder="例如：雄哥" /></div>
+        <button id="createBtn" style="width:100%;margin-top:12px">创建房间</button>
+      </div>
+      <div>
+        <h3 style="margin:0 0 6px">加入 PK</h3>
+        <div class="small">朋友发了链接的话，房间码会自动填好。</div>
+        <div class="field"><label>你的昵称</label><input id="joinName" maxlength="12" placeholder="例如：小王" /></div>
+        <div class="field"><label>房间码</label><input id="roomInput" maxlength="4" placeholder="ABCD" style="text-transform:uppercase" /></div>
+        <button id="joinBtn" class="secondary" style="width:100%;margin-top:12px">加入房间</button>
+      </div>
+    </div>
+    <div class="notice">建议玩法：每局末位只做一次轻量惩罚。喝酒可替换为喝水、真心话或搞笑动作；不劝酒、不驾车。</div>
+  </section>
+
+  <section id="lobby" class="hidden">
+    <div class="card">
+      <div class="topbar">
+        <div>
+          <div class="roomtag">房间 <b id="roomLabel"></b></div>
+          <div class="status" style="margin-top:8px"><span id="statusDot" class="dot"></span><span id="statusText">连接中…</span></div>
+        </div>
+        <div class="btnrow" style="margin:0;flex-wrap:nowrap">
+          <button id="shareBtn" class="secondary">分享链接</button>
+          <button id="leaveBtn" class="ghost">退出</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="topbar"><h3 style="margin:0">玩家 & 总积分</h3><span id="playerCount" class="pill">0 人</span></div>
+      <div id="players" class="players"></div>
+    </div>
+
+    <div class="card hostonly">
+      <h3 style="margin:0">选择下一局</h3>
+      <div class="games" id="gameSelect">
+        <button class="gamepick active" data-game="timer"><strong>⏱ 7 秒盲停</strong><span>越接近 7.000 秒越强</span></button>
+        <button class="gamepick" data-game="tapper"><strong>⚡ 疯狂连点</strong><span>5 秒内谁点得最多</span></button>
+        <button class="gamepick" data-game="reaction"><strong>🟢 反应王</strong><span>变绿后最快点击</span></button>
+        <button class="gamepick" data-game="dice"><strong>🎲 骰子王</strong><span>一键比大小，纯看命</span></button>
+      </div>
+      <div class="divider"></div>
+      <div class="topbar">
+        <div>
+          <div class="small">惩罚模式</div>
+          <div class="mode" style="margin-top:7px">
+            <button class="secondary modeBtn" data-mode="sip">🥂 一小口</button>
+            <button class="secondary modeBtn" data-mode="water">💧 喝水</button>
+            <button class="secondary modeBtn" data-mode="fun">😜 趣味惩罚</button>
+          </div>
+        </div>
+        <button id="startRoundBtn">开始这一局</button>
+      </div>
+    </div>
+
+    <div id="gameCard" class="card hidden"></div>
+    <div id="resultCard" class="card hidden"></div>
+  </section>
+</div>
+<div id="toast" class="toast">已复制</div>
+
+<script>
+(() => {
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const HOME = $('#home'), LOBBY = $('#lobby'), GAME = $('#gameCard'), RESULT = $('#resultCard');
+const PUNISH = {sip:['🥂 喝一小口','补一口水再继续，别逞强。'], water:['💧 喝一口水','清醒选手也要有仪式感。'], fun:['😜 趣味惩罚','做一个 5 秒表情包动作。']};
+let role=null, room='', peer=null, hostConn=null, conns=new Map(), meId='', meName='', selectedGame='timer', punishMode='sip';
+let players={}, scores={}, currentRound=null, results={}, roundTimer=null, gameCleanup=null;
+const urlRoom = new URLSearchParams(location.search).get('room'); if(urlRoom){ $('#roomInput').value = urlRoom.toUpperCase().slice(0,4); }
+function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function toast(t){const x=$('#toast');x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),1700)}
+function rndCode(){const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';return Array.from({length:4},()=>chars[Math.floor(Math.random()*chars.length)]).join('')}
+function setOnline(on,text){$('#statusDot').classList.toggle('on',on);$('#statusText').textContent=text}
+function enterLobby(){HOME.classList.add('hidden');LOBBY.classList.remove('hidden');document.body.classList.toggle('is-host',role==='host');$('#roomLabel').textContent=room;renderPlayers();}
+function shareUrl(){return `${location.origin}${location.pathname}?room=${encodeURIComponent(room)}`}
+async function share(){const data={title:'酒局擂台 PK',text:`来房间 ${room} PK！`,url:shareUrl()};try{if(navigator.share){await navigator.share(data)}else{await navigator.clipboard.writeText(data.url);toast('链接已复制')}}catch(e){if(e.name!=='AbortError')toast('复制失败，可手动复制地址栏') }}
+function broadcast(msg){for(const c of conns.values()) if(c.open) c.send(msg)}
+function stateMsg(){return {type:'state',players,scores,round:currentRound}}
+function sync(){renderPlayers(); if(role==='host') broadcast(stateMsg())}
+function renderPlayers(){const ids=Object.keys(players);$('#playerCount').textContent=`${ids.length} 人`;$('#players').innerHTML=ids.map(id=>`<div class="player"><div class="pname">${id===meId?'⭐ ':''}${esc(players[id].name)}</div><div class="pscore">${scores[id]||0}</div><div class="small">积分</div></div>`).join('')||'<div class="small">等待玩家加入…</div>'}
+function createHost(){meName=$('#hostName').value.trim()||'房主'; room=rndCode(); role='host'; meId='host'; players={host:{name:meName}};scores={host:0};history.replaceState(null,'',`?room=${room}`);enterLobby();setOnline(false,'正在创建房间…');
+  peer=new Peer(`cheerspk-${room.toLowerCase()}`,{debug:0,config:{iceServers:[{urls:'stun:stun.cloudflare.com:3478'},{urls:'stun:stun.l.google.com:19302'}]}});
+  peer.on('open',()=>setOnline(true,'房间在线，等朋友加入'));
+  peer.on('connection',conn=>{conn.on('open',()=>{const id=conn.peer;conns.set(id,conn);players[id]={name:(conn.metadata&&conn.metadata.name)||'玩家'};scores[id]=scores[id]||0;conn.send({type:'welcome',id,...stateMsg()});sync();toast(`${players[id].name} 加入了`)});conn.on('data',d=>hostHandle(conn,d));conn.on('close',()=>{const id=conn.peer;if(players[id]) toast(`${players[id].name} 离开了`);conns.delete(id);delete players[id];delete scores[id];sync();maybeFinish()})});
+  peer.on('error',e=>{if(e.type==='unavailable-id'){toast('房间码冲突，正在重试');peer.destroy();setTimeout(createHost,300)}else setOnline(false,`连接异常：${e.type}`)});
+}
+function joinRoom(){meName=$('#joinName').value.trim()||'玩家';room=$('#roomInput').value.trim().toUpperCase();if(room.length!==4){toast('请输入 4 位房间码');return}role='player';enterLobby();setOnline(false,'正在加入…');peer=new Peer(undefined,{debug:0,config:{iceServers:[{urls:'stun:stun.cloudflare.com:3478'},{urls:'stun:stun.l.google.com:19302'}]}});peer.on('open',()=>{hostConn=peer.connect(`cheerspk-${room.toLowerCase()}`,{metadata:{name:meName},reliable:true});hostConn.on('open',()=>setOnline(true,'已连接房主'));hostConn.on('data',clientHandle);hostConn.on('close',()=>setOnline(false,'房主已离开，房间结束'));hostConn.on('error',()=>setOnline(false,'房间连接失败'))});peer.on('error',e=>{if(e.type==='peer-unavailable'){setOnline(false,'没找到房间：确认房主页面仍打开');toast('房间暂时不存在')}else setOnline(false,`连接异常：${e.type}`)});}
+function hostHandle(conn,d){if(!d||typeof d!=='object')return;if(d.type==='result'&&currentRound&&d.roundId===currentRound.id){results[conn.peer]=d.result;maybeFinish()}}
+function clientHandle(d){if(!d||typeof d!=='object')return;if(d.type==='welcome'){meId=d.id;players=d.players;scores=d.scores||{};currentRound=d.round;renderPlayers();if(currentRound)startGameUI(currentRound)}else if(d.type==='state'){players=d.players||players;scores=d.scores||scores;renderPlayers()}else if(d.type==='round'){currentRound=d.round;startGameUI(currentRound)}else if(d.type==='roundResult'){scores=d.scores||scores;renderPlayers();showRoundResult(d)} }
+function submitResult(value){if(!currentRound)return;if(role==='host'){results[meId]=value;maybeFinish()}else if(hostConn&&hostConn.open){hostConn.send({type:'result',roundId:currentRound.id,result:value})} lockGame('结果已提交，等其他人…')}
+function lockGame(msg){const z=$('#gameStatus');if(z)z.textContent=msg;$$('[data-action]').forEach(b=>b.disabled=true)}
+function startRound(){if(role!=='host')return;const ids=Object.keys(players);if(ids.length<2){toast('至少 2 人才能 PK');return}results={};currentRound={id:Date.now().toString(36),game:selectedGame,createdAt:Date.now(),punishMode};broadcast({type:'round',round:currentRound});startGameUI(currentRound);clearTimeout(roundTimer);roundTimer=setTimeout(()=>finishRound(),26000)}
+function maybeFinish(){if(role!=='host'||!currentRound)return;const ids=Object.keys(players);if(ids.length>=2&&ids.every(id=>results[id]!==undefined))finishRound()}
+function rankResults(){const entries=Object.keys(results).map(id=>({id,name:players[id]?.name||'玩家',v:results[id]}));const g=currentRound.game;if(g==='timer')entries.sort((a,b)=>Math.abs(a.v-7000)-Math.abs(b.v-7000));else if(g==='tapper'||g==='dice')entries.sort((a,b)=>b.v-a.v);else entries.sort((a,b)=>a.v-b.v);return entries}
+function displayValue(game,v){if(game==='timer')return `${(v/1000).toFixed(3)} 秒`;if(game==='tapper')return `${v} 次`;if(game==='reaction')return v>=9999?'抢跑':`${Math.round(v)} ms`;return `${v} 点`}
+function finishRound(){if(role!=='host'||!currentRound)return;clearTimeout(roundTimer);const ranking=rankResults();if(!ranking.length)return;ranking.slice(0,3).forEach((x,i)=>scores[x.id]=(scores[x.id]||0)+[3,2,1][i]);const loserCount=ranking.length>=6?2:1;const losers=ranking.slice(-loserCount).map(x=>x.id);const payload={type:'roundResult',roundId:currentRound.id,game:currentRound.game,ranking,losers,scores:{...scores},punishMode:currentRound.punishMode};broadcast(payload);showRoundResult(payload);renderPlayers();currentRound=null;results={};sync()}
+function showRoundResult(d){GAME.classList.add('hidden');RESULT.classList.remove('hidden');const pp=PUNISH[d.punishMode]||PUNISH.sip;const rows=d.ranking.map((x,i)=>`<div class="rank ${x.id===meId?'me':''}"><div class="medal">${['🥇','🥈','🥉'][i]||`#${i+1}`}</div><div><b>${esc(x.name)}</b></div><div>${displayValue(d.game,x.v)}</div></div>`).join('');const loserNames=d.ranking.filter(x=>d.losers.includes(x.id)).map(x=>esc(x.name)).join('、');RESULT.innerHTML=`<div class="topbar"><h3 style="margin:0">本轮结果</h3><span class="pill">前三名 +3 / +2 / +1</span></div><div class="ranking">${rows}</div><div class="punish"><strong>${loserNames}：${pp[0]}</strong><div class="small" style="margin-top:6px">${pp[1]}</div></div>${role==='host'?'<div class="btnrow"><button id="nextBtn">下一局</button></div>':'<div class="small center" style="margin-top:14px">等待房主开启下一局…</div>'}`;if(role==='host')$('#nextBtn').onclick=()=>{RESULT.classList.add('hidden');window.scrollTo({top:0,behavior:'smooth'})}}
+function clearGame(){if(gameCleanup)try{gameCleanup()}catch{};gameCleanup=null;GAME.innerHTML='';RESULT.classList.add('hidden');GAME.classList.remove('hidden')}
+function startGameUI(r){clearGame();if(r.game==='timer')gameTimer();else if(r.game==='tapper')gameTapper();else if(r.game==='reaction')gameReaction();else gameDice();GAME.scrollIntoView({behavior:'smooth',block:'start'})}
+function header(title,desc){return `<div class="center"><span class="pill">本轮 PK</span><h2 style="margin:10px 0 5px">${title}</h2><div class="small">${desc}</div></div><div id="gameStatus" class="small center" style="margin-top:12px"></div>`}
+function gameTimer(){let started=false,t0=0;GAME.innerHTML=header('⏱ 7 秒盲停','开始后计时会隐藏，凭感觉在 7 秒整停下')+`<div class="tapzone" id="zone"><div><div class="main" id="timerText">准备好了吗？</div><div class="small" style="margin-top:8px">点击开始，再点击停止</div></div></div>`;const z=$('#zone'),t=$('#timerText');z.setAttribute('data-action','1');z.onclick=()=>{if(z.disabled)return;if(!started){started=true;t0=performance.now();t.textContent='计时中…';z.style.background='linear-gradient(145deg,#3b2f0a,#5b4304)';$('#gameStatus').textContent='别数太大声 😏'}else{const v=Math.round(performance.now()-t0);t.textContent=`${(v/1000).toFixed(3)} 秒`;submitResult(v)}}}
+function gameTapper(){let count=0,active=false,endTimer=null;GAME.innerHTML=header('⚡ 疯狂连点','5 秒内点得越多越好')+`<div class="tapzone" id="zone"><div><div class="num" id="tapNum">0</div><div class="main">点我！</div></div></div><div class="btnrow"><button id="tapStart" data-action>3 秒后开始</button></div>`;const z=$('#zone'),n=$('#tapNum'),b=$('#tapStart');b.onclick=()=>{b.disabled=true;let c=3;b.textContent=c;const iv=setInterval(()=>{c--;if(c){b.textContent=c}else{clearInterval(iv);b.classList.add('hidden');active=true;$('#gameStatus').textContent='开始！5 秒！';endTimer=setTimeout(()=>{active=false;submitResult(count)},5000)}},650)};z.onclick=()=>{if(active){count++;n.textContent=count;if(navigator.vibrate)navigator.vibrate(8)}};gameCleanup=()=>clearTimeout(endTimer)}
+function gameReaction(){let ready=false,done=false,start=0,tm=null;GAME.innerHTML=header('🟢 反应王','红色时别点，变绿瞬间点击')+`<div class="tapzone bad" id="zone"><div><div class="main" id="reactText">点“准备”开始</div><div class="small" style="margin-top:8px">抢跑会记 9999 ms</div></div></div><div class="btnrow"><button id="reactStart" data-action>准备</button></div>`;const z=$('#zone'),t=$('#reactText'),b=$('#reactStart');b.onclick=()=>{b.disabled=true;t.textContent='等绿色…';const wait=1800+Math.random()*2800;tm=setTimeout(()=>{ready=true;start=performance.now();z.classList.remove('bad');z.classList.add('go');t.textContent='现在！'},wait)};z.onclick=()=>{if(done||!b.disabled)return;if(!ready){done=true;clearTimeout(tm);t.textContent='抢跑！';submitResult(9999)}else{done=true;const v=performance.now()-start;t.textContent=`${Math.round(v)} ms`;submitResult(v)}};gameCleanup=()=>clearTimeout(tm)}
+function gameDice(){let rolled=false;GAME.innerHTML=header('🎲 骰子王','每人只有一次机会，点数越大排名越高')+`<div class="tapzone" id="zone"><div><div class="num" id="diceNum">?</div><div class="main">摇一摇</div></div></div>`;const z=$('#zone'),n=$('#diceNum');z.setAttribute('data-action','1');z.onclick=()=>{if(rolled)return;rolled=true;let i=0;const iv=setInterval(()=>{n.textContent=1+Math.floor(Math.random()*6);if(++i>9){clearInterval(iv);const v=1+Math.floor(Math.random()*6);n.textContent=v;submitResult(v)}},70)}}
+$('#createBtn').onclick=createHost;$('#joinBtn').onclick=joinRoom;$('#shareBtn').onclick=share;$('#leaveBtn').onclick=()=>location.href=location.pathname;$('#startRoundBtn').onclick=startRound;
+$('#gameSelect').onclick=e=>{const b=e.target.closest('.gamepick');if(!b)return;selectedGame=b.dataset.game;$$('.gamepick').forEach(x=>x.classList.toggle('active',x===b))};
+$$('.modeBtn').forEach(b=>b.onclick=()=>{punishMode=b.dataset.mode;$$('.modeBtn').forEach(x=>x.style.outline=x===b?'2px solid var(--accent)':'none')});$$('.modeBtn')[0].click();
+})();
+</script>
+</body>
+</html>
